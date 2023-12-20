@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.geminiintegration.ui.theme.GeminiIntegrationTheme
+import com.techhabiles.geminiintegration.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

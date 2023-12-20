@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.geminiintegration.util.UiUtils
+import com.techhabiles.geminiintegration.R
 
 /**
  *  Home Activity to provide a list of options to the user

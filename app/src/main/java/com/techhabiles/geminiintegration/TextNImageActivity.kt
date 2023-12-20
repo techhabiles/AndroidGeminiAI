@@ -48,6 +48,8 @@ import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
+import com.techhabiles.geminiintegration.BuildConfig
+import com.techhabiles.geminiintegration.R
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

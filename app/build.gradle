@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.geminiintegration'
+    namespace 'com.techhabiles.geminiintegration'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.geminiintegration"
+        applicationId "com.techhabiles.geminiintegration"
         minSdk 31
         targetSdk 34
         versionCode 1

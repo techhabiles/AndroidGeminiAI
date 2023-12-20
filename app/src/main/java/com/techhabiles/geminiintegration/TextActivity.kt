@@ -37,6 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.ai.client.generativeai.GenerativeModel
+import com.techhabiles.geminiintegration.BuildConfig
+import com.techhabiles.geminiintegration.R
 import java.util.Locale
 
 /**
