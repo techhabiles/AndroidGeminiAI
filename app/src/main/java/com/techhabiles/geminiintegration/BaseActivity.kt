@@ -1,4 +1,4 @@
-package com.example.geminiintegration
+package com.techhabiles.geminiintegration
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

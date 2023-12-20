@@ -1,4 +1,4 @@
-package com.example.geminiintegration
+package com.techhabiles.geminiintegration
 
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.Chat

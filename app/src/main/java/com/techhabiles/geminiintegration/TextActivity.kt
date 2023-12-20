@@ -1,4 +1,4 @@
-package com.example.geminiintegration
+package com.techhabiles.geminiintegration
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognitionListener

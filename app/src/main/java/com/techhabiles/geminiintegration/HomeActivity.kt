@@ -1,4 +1,4 @@
-package com.example.geminiintegration
+package com.techhabiles.geminiintegration
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
