@@ -10,6 +10,7 @@
 - You can put your queries and let Gemini AI generate response for you
 - Speech Recognition is used so you can avoid typing and directly use phone mic to input your query
 - Camera, Gallery and Permission implementation with Compose to take/pick images and let Gemini Describe those
+- TTS provide in case you want android system to read the Gemini response text for you
 - Developed using JetPack Compose UI, as focus is mainly on Gemini integration, some of the compose implementation may not be up to the mark
 - MVVM architecture design pattern
 
