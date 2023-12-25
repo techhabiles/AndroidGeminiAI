@@ -62,6 +62,7 @@ class TextActivity : BaseActivity() {
             modelName = "gemini-pro",
             apiKey = BuildConfig.apiKey
         )
+        // Initialize TTS
         tts = TextToSpeech(this) {
             if( it == TextToSpeech.SUCCESS){
                 ttsInitialized = true
@@ -69,6 +70,7 @@ class TextActivity : BaseActivity() {
             }
         }
         viewModel = GeminiViewModel(generativeModel)
+        // collect speak state from view model to start and stop tts
         lifecycleScope.launch {
             viewModel.speak.collect{
                 it?.let{
@@ -112,6 +114,11 @@ class TextActivity : BaseActivity() {
         super.onDestroy()
         tts.stop()
         tts.shutdown()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        tts.stop()
     }
     override fun getDataViewModel(): BaseViewModel {
         return viewModel
