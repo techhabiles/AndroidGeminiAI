@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">TH Gemini AI</string>
     <string name="action_go">Go</string>
+    <string name="action_speak">Speak</string>
+    <string name="action_stop">Stop</string>
     <string name="action_camera">Camera</string>
     <string name="action_gallery">Pick Image</string>
     <string name="summarize_label">Text to summarize</string>

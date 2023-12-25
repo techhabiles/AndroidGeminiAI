@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
 import android.view.MotionEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +25,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -36,9 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
 import com.google.ai.client.generativeai.GenerativeModel
 import com.techhabiles.geminiintegration.BuildConfig
 import com.techhabiles.geminiintegration.R
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 /**
@@ -48,6 +53,8 @@ import java.util.Locale
 class TextActivity : BaseActivity() {
     lateinit var viewModel: GeminiViewModel
     private lateinit var speechRecognizer: SpeechRecognizer
+    private lateinit var tts: TextToSpeech
+    private var ttsInitialized = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +62,26 @@ class TextActivity : BaseActivity() {
             modelName = "gemini-pro",
             apiKey = BuildConfig.apiKey
         )
+        tts = TextToSpeech(this) {
+            if( it == TextToSpeech.SUCCESS){
+                ttsInitialized = true
+                tts.language = Locale.US
+            }
+        }
         viewModel = GeminiViewModel(generativeModel)
+        lifecycleScope.launch {
+            viewModel.speak.collect{
+                it?.let{
+
+                    if(it && ttsInitialized){
+                        tts.speak(viewModel.response.value, TextToSpeech.QUEUE_FLUSH, null, null)
+                    }else{
+                        tts.stop()
+                    }
+                }
+            }
+        }
+
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         speechRecognizer.setRecognitionListener(object : RecognitionListener{
             override fun onReadyForSpeech(params: Bundle?) {}
@@ -81,13 +107,19 @@ class TextActivity : BaseActivity() {
 
         })
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tts.stop()
+        tts.shutdown()
+    }
     override fun getDataViewModel(): BaseViewModel {
         return viewModel
     }
 
     @Composable
     override fun ScreenContent(){
-        TextScreen(viewModel, speechRecognizer, onSummarizeClicked = { inputText ->
+        TextScreen(viewModel, speechRecognizer,  onSummarizeClicked = { inputText ->
             viewModel.answerUserInputs(inputText)
         })
     }
@@ -104,12 +136,22 @@ fun TextScreen(
 ) {
     val prompt  by viewModel.prompt.collectAsState()
     val response by viewModel.response.collectAsState()
+    val speaking by viewModel.speak.collectAsState()
+
     val focusManager = LocalFocusManager.current
     var color = Color.Gray
-    val speakText = stringResource(id = R.string.speak_text)
+
+    var speakText = stringResource(id = R.string.speak_text)
+
+
     val disabled = prompt.isBlank() ||  prompt == speakText
     if(!disabled){
         color = colorResource(id = R.color.th_custom)
+    }
+    val speakDisabled = response.isBlank()
+    var speakColor = Color.Gray
+    if(!speakDisabled){
+        speakColor = colorResource(id = R.color.th_custom)
     }
 
     Column(
@@ -117,9 +159,44 @@ fun TextScreen(
             .padding(all = 8.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(text = stringResource(id = R.string.gemini_output_label), fontSize = 24.sp, fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp))
-        TextField(value = response, onValueChange ={} , modifier = Modifier
+        Row() {
+            Text(
+                text = stringResource(id = R.string.gemini_output_label),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f)
+            )
+            TextButton(
+                onClick = {
+                    viewModel.speakText()
+                },
+
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(all = 4.dp)
+                    .align(Alignment.CenterVertically)
+                    .border(
+                        2.dp,
+                        Color.Black, RectangleShape
+                    )
+                    .background(color = speakColor, RectangleShape),
+               // enabled = !speakDisabled
+
+
+            ) {
+
+                if(speaking) {
+                    Text(text = stringResource(id = R.string.action_stop), color = Color.White)
+                }else{
+                    Text(text = stringResource(id = R.string.action_speak), color = Color.White)
+
+                }
+            }
+
+        }
+        TextField(value = response, onValueChange = {}, modifier = Modifier
             .weight(1f)
             .fillMaxWidth()
             .padding(8.dp)
@@ -128,7 +205,8 @@ fun TextScreen(
                 2.dp,
                 Color.Black, RectangleShape
             ),
-            colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent))
+            colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
+            )
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)) {

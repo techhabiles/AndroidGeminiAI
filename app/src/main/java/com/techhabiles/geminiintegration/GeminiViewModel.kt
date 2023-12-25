@@ -17,6 +17,10 @@ import kotlinx.coroutines.launch
 class GeminiViewModel(
     private val generativeModel: GenerativeModel
 ) : BaseViewModel() {
+    private val _speak: MutableStateFlow<Boolean> =
+        MutableStateFlow(false)
+
+    val speak: StateFlow<Boolean> = _speak
 
     private val _response: MutableStateFlow<String> =
         MutableStateFlow("")
@@ -95,11 +99,16 @@ class GeminiViewModel(
         _response.value = message
     }
 
+    fun speakText(){
+        _speak.value = !(_speak.value)!!
+    }
+
     /**
      *  Clear response received from Gemini to user interface
      */
     fun clearResponse(){
        setResponse("")
+        _speak.value = false
     }
 
     /**
@@ -112,14 +121,12 @@ class GeminiViewModel(
 
         viewModelScope.launch {
             try {
-                generativeModel.generateContentStream(inputText).collect{
-                    it.text?.let {
-                        setResponse("${_response.value} $it")
-                    }
-                    setLoading(false)
+
+                val resp = generativeModel.generateContent(inputText)
+                resp.text?.let{
+                    setResponse(it)
                 }
-
-
+                setLoading(false)
             } catch (e: Exception) {
                 setLoading(false)
                 setResponse(e.localizedMessage ?: "")
@@ -133,5 +140,6 @@ class GeminiViewModel(
     override fun onCleared() {
         super.onCleared()
         chat = null
+
     }
 }
