@@ -104,6 +104,11 @@ class TextNImageActivity : BaseActivity() {
         return viewModel
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        tts.stop()
+        tts.shutdown()
+    }
     @Composable
     override fun ScreenContent() {
         TextNImageScreen(viewModel)
