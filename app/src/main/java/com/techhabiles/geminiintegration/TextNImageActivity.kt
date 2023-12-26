@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -129,6 +131,9 @@ fun TextNImageScreen(
     viewModel: GeminiViewModel
 ) {
 
+    val choices = listOf("Describe", "Read Text")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(choices[0] ) }
+
     val response by viewModel.response.collectAsState()
     val speaking by viewModel.speak.collectAsState()
     val context = LocalContext.current
@@ -231,6 +236,18 @@ fun TextNImageScreen(
 
         // if UI have path, show selected or taken image with describe and clear button
         if (capturedImageUri.path?.isNotEmpty() == true) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
+                choices.forEach{
+                    RadioButton(
+                        selected = (it == selectedOption),
+                        onClick = { onOptionSelected(it) }
+                    )
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
               Row(modifier = Modifier.fillMaxWidth()) {
                 Image(
                     modifier = Modifier
@@ -259,7 +276,11 @@ fun TextNImageScreen(
                                 bitmap?.let {
                                     image(it)
                                 }
-                                text("Describe this image")
+                                if(selectedOption == choices[1]) {
+                                    text("Read Text from this image")
+                                }else{
+                                    text("Describe this image")
+                                }
                             }
                             viewModel.describeImage(input)
                         },
@@ -277,7 +298,7 @@ fun TextNImageScreen(
 
 
                     ) {
-                        Text(stringResource(R.string.describe_label), color = Color.White)
+                        Text(text = selectedOption, color = Color.White)
                     }
                     TextButton(
                         onClick = {
