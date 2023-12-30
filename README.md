@@ -14,6 +14,10 @@
 - Developed using JetPack Compose UI, as focus is mainly on Gemini integration, some of the compose implementation may not be up to the mark
 - MVVM architecture design pattern
 
+# Youtube
+
+https://www.youtube.com/watch?v=BHL5HjTkS64
+
 ## Contact
 
 - For any query please email  krish@techhabiles.com
